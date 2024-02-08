@@ -1,0 +1,197 @@
+/* Variables */
+:root {
+  --gray: #e0e4e7;
+  --yellow: #fee120;
+  --black: #131b23;
+  --grayer: #e0e4e7;
+}
+
+.manga-page-info__text,
+.info-chapters__extra-info {
+  background-color: var(--grayer);
+  border-radius: 0.5rem;
+  padding: 20px;
+}
+
+.info-chapters__extra-info {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Body, header, and navbar specific styles */
+body.manga-page {
+  background-color: var(--gray);
+}
+
+header.manga-page {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.navbar.manga-page {
+  background-color: rgba(254, 224, 32, 0.5);
+  transition: 0.5s;
+}
+
+.navbar.manga-page:hover {
+  background-color: var(--yellow);
+}
+
+/* Keyframes and animation */
+@keyframes posterStart {
+  0% {
+    filter: opacity(0.5);
+    filter: brightness(0.9);
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.poster {
+  box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.poster .img-div {
+  height: 100%;
+  width: 100%;
+  background-position: 50% 35%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  animation: posterStart 0.3s;
+}
+
+@keyframes imgStart {
+  0% {
+    margin-top: -50px;
+  }
+  100% {
+    margin-top: -100px;
+  }
+}
+
+@keyframes imgStartReverse {
+  0% {
+    margin-top: -5rem;
+  }
+  100% {
+    margin-top: 2rem;
+  }
+}
+
+@keyframes textStart {
+  0% {
+    margin-top: -5rem;
+  }
+  100% {
+    margin-top: 2rem;
+  }
+}
+
+.manga-page-info {
+  display: flex;
+  max-height: 300px;
+}
+
+.manga-page-info__img {
+  animation: imgStart 0.3s;
+  margin-top: -100px;
+  width: 200px;
+  z-index: 10;
+}
+
+.manga-page-info__img img {
+  box-shadow: 0px -1px 40px 10px rgba(136, 95, 95, 0.5);
+  z-index: 2;
+}
+
+.manga-page-info__img {
+  border-radius: 0.5rem;
+}
+
+.manga-page-info__text {
+  position: relative;
+  animation: textStart 0.3s;
+  margin: 2rem;
+  margin-right: 0;
+  height: 100%;
+  overflow: scroll;
+  transition: 1s;
+}
+.manga-page-info__text::-webkit-scrollbar {
+  display: none;
+}
+
+.manga-page-info__text h1,
+.manga-page-info__text p {
+  margin: 0;
+  padding: 0;
+  color: black;
+}
+
+.info-chapters__chapters a {
+  text-decoration: none;
+}
+
+/* Media Queries */
+@media (max-width: 1150px) {
+  .manga-page-info,
+  .info-chapters {
+    padding-bottom: 1rem;
+  }
+
+  .manga-page-info {
+    flex-direction: column;
+  }
+
+  .manga-page-info__text {
+    margin: 0;
+  }
+
+  .add-to-list-btn {
+    margin-top: 20px;
+  }
+
+  .manga-page-info__text {
+    margin-left: 0;
+    width: auto;
+    margin-bottom: 0;
+    max-height: initial;
+  }
+
+  .manga-page-info__img {
+    margin-top: -280px;
+  }
+}
+
+@media (max-width: 400px) {
+  .info-chapters {
+    max-height: 100rem;
+    flex-direction: column;
+  }
+
+  .info-chapters__chapters {
+    width: 100%;
+    height: 30rem;
+    margin: 0;
+    margin-top: 1rem;
+  }
+}
+
+/* Additional styles for buttons */
+.add-to-list-btn {
+  height: 3rem;
+  width: 100%;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--yellow);
+  color: black;
+}
+
+/* Note: The @extend feature in SCSS has no direct CSS equivalent, so you need to manually apply those styles or use a preprocessor. */

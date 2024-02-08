@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+  font-family: "Gagalin";
+  src: url("../fonts/gagalin-regular-webfont.woff") format("woff");
+}
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --dark-blue: #0b1622;
+  --blue: #152232;
+  --light-blue: #3577ff;
+  --gray: #adc0d2;
+  --color-gray-300: 30, 42, 56;
+  --color-blue-700: 8, 143, 214;
+  --color-background-300: 30, 42, 56;
+  font-family: "Gagalin";
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-brackground-dark: 6, 12, 19;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: var(--dark-blue);
+}
+
+.dark-blue-bg {
+  background: var(--dark-blue);
+}
+.blue-bg {
+  background: var(--blue);
+}
+.light-blue-bg {
+  background: var(--light-blue);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
