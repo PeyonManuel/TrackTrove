@@ -93,5 +93,4 @@ const searchSlice = createSlice({
   },
 });
 
-// Export the reducer
 export default searchSlice.reducer;

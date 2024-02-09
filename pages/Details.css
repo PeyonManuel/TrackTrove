@@ -58,30 +58,12 @@ header.manga-page {
   justify-content: center;
 }
 
-.poster .img-div {
-  height: 100%;
-  width: 100%;
-  background-position: 50% 35%;
-  background-repeat: no-repeat;
-  background-size: cover;
-  animation: posterStart 0.3s;
-}
-
 @keyframes imgStart {
   0% {
-    margin-top: -50px;
-  }
-  100% {
     margin-top: -100px;
   }
-}
-
-@keyframes imgStartReverse {
-  0% {
-    margin-top: -5rem;
-  }
   100% {
-    margin-top: 2rem;
+    margin-top: 0;
   }
 }
 
@@ -96,14 +78,10 @@ header.manga-page {
 
 .manga-page-info {
   display: flex;
-  max-height: 300px;
 }
 
 .manga-page-info__img {
   animation: imgStart 0.3s;
-  margin-top: -100px;
-  width: 200px;
-  z-index: 10;
 }
 
 .manga-page-info__img img {
@@ -113,6 +91,7 @@ header.manga-page {
 
 .manga-page-info__img {
   border-radius: 0.5rem;
+  width: 500px;
 }
 
 .manga-page-info__text {
@@ -120,7 +99,6 @@ header.manga-page {
   animation: textStart 0.3s;
   margin: 2rem;
   margin-right: 0;
-  height: 100%;
   overflow: scroll;
   transition: 1s;
 }
@@ -130,7 +108,6 @@ header.manga-page {
 
 .manga-page-info__text h1,
 .manga-page-info__text p {
-  margin: 0;
   padding: 0;
   color: black;
 }
@@ -146,10 +123,6 @@ header.manga-page {
     padding-bottom: 1rem;
   }
 
-  .manga-page-info {
-    flex-direction: column;
-  }
-
   .manga-page-info__text {
     margin: 0;
   }
@@ -163,10 +136,6 @@ header.manga-page {
     width: auto;
     margin-bottom: 0;
     max-height: initial;
-  }
-
-  .manga-page-info__img {
-    margin-top: -280px;
   }
 }
 

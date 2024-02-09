@@ -14,20 +14,28 @@ export default async function handler(req, res) {
   Object.keys(query).forEach((key) => {
     url.searchParams.append(key, query[key]);
   });
-
   try {
     // Fetch data from OMDB API
     const omdbResponse = await fetch(url.toString());
     const data = await omdbResponse.json();
-    const search = data.Search;
-    details = {
-      title: movie.Title,
-      imageUrl: movie.Poster === "N/A" ? "" : movie.Poster,
-      id: movie.imdbID,
+    console.log(data);
+    const details = {
+      title: data.Title,
+      imageUrl: data.Poster === "N/A" ? "" : data.Poster,
+      director: data.Director,
+      writer: data.Writer,
+      synopsis: data.Plot,
+      runtime: data.Runtime,
+      extras: {
+        year: data.Year,
+        genres: data.Genre,
+        actors: data.Actors,
+        revenue: data.BoxOffice,
+        score: data.imdbRating,
+      },
     };
-    const hasNextPage = results.length > 0;
     // Send the data back to the client
-    res.status(200).json({ omdbResponse });
+    res.status(200).json({ details });
   } catch (error) {
     // Handle any errors
     res.status(500).json({ error: "Failed to fetch data from OMDB API" });

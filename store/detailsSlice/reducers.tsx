@@ -1,4 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  isFulfilled,
+  isPending,
+  isRejected,
+} from "@reduxjs/toolkit";
+import { movieDetails } from "./fetchers";
 
 const initialState = {
   details: {},
@@ -6,12 +12,15 @@ const initialState = {
   error: null,
 };
 
-const searchSlice = createSlice({
+const detailsSlice = createSlice({
   name: "search",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(movieDetails.fulfilled, (state, action) => {
+        state.details = action.payload.details;
+      })
       .addMatcher(isFulfilled, (state) => {
         state.detailsLoading = false;
       })
@@ -25,3 +34,5 @@ const searchSlice = createSlice({
       });
   },
 });
+
+export default detailsSlice.reducer;

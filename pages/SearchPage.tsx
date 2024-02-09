@@ -31,9 +31,7 @@ const SearchPage = () => {
   const searchResults = useSelector((state: any) => state.search.searchResults);
   const hasNextPage = useSelector((state: any) => state.search.hasNextPage);
   const dispatch = useDispatch();
-  useEffect(() => {
-    console.log(searchResults);
-  }, [searchResults]);
+
   const observer: any = useRef();
   const lastResultElement = useCallback(
     (node: any) => {
