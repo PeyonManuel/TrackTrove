@@ -19,8 +19,6 @@ export default async function handler(req, res) {
   fetch(url.toString())
     .then((omdbResponse) => omdbResponse.json())
     .then((data) => {
-      console.log(data.Director === "N/A");
-
       const details = {
         title: data.Title,
         imageUrl: data.Poster === "N/A" ? "" : data.Poster,

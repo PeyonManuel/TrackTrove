@@ -16,9 +16,13 @@ export default async function handler(req, res) {
     url.searchParams.append(key, query[key]);
   });
   // Fetch data from OMDB API
+  console.log(url.toString());
   fetch(url.toString())
     .then((omdbResponse) => omdbResponse.json())
     .then((data) => {
+      if (data.Error) {
+        return res.status(404).json({ error: data.error });
+      }
       const details = {
         title: data.Title,
         imageUrl: data.Poster === "N/A" ? "" : data.Poster,
@@ -34,6 +38,7 @@ export default async function handler(req, res) {
           score: data.imdbRating,
         },
       };
+      console.log(data);
       // Send the data back to the client
       res.status(200).json({ details });
     })

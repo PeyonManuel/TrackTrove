@@ -16,7 +16,6 @@ function MangaPage() {
   const detailsLoading = useSelector(
     (state: detailsState) => state.details.detailsLoading
   );
-  console.log(detailsLoading, details);
   const searchParams = useSearchParams();
   const type = searchParams && searchParams.get("type");
   const id = searchParams && searchParams.get("id");

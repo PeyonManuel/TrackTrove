@@ -7,7 +7,7 @@ export const tvDetails = createAsyncThunk(
   async ({ id }: { id: string }) => {
     try {
       const response = await axios.get(
-        `/api/details/externalAPI/tvdetails?id=${id}`
+        `/api/details/externalAPI/tvdetails?i=${id}`
       );
       return response.data;
     } catch (error) {
@@ -22,7 +22,7 @@ export const movieDetails = createAsyncThunk(
   async ({ id }: { id: string }) => {
     try {
       const response = await axios.get(
-        `/api/details/externalAPI/moviedetails?id=${id}`
+        `/api/details/externalAPI/moviedetails?i=${id}`
       );
       return response.data;
     } catch (error) {

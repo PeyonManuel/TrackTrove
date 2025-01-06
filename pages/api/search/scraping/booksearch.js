@@ -52,7 +52,6 @@ export default async (req, res) => {
 
     // Close the browser
     await browser.close();
-    console.log(titles);
     // Send the scraped data as a JSON response
     res.status(200).json({ results: titles, hasNextPage });
   } catch (error) {
