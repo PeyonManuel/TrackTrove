@@ -43,8 +43,6 @@ export default async (req, res) => {
     res.status(200).json({ results: titles, hasNextPage });
   } catch (error) {
     console.error("Error:", error.message);
-    res
-      .status(500)
-      .json({ error: "An error occurred while scraping the data." });
+    res.status(500).json({ error: error.message });
   }
 };
