@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm run install-deps",
-    "install-deps": "apk --no-cache add libnss3",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -14,11 +13,10 @@
     "@headlessui/react": "^1.7.19",
     "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.7.9",
-    "chrome-aws-lambda": "^10.1.0",
+    "chrome-aws-lambda": "^6",
     "font-face": "^2.3.4",
     "next": "14.2.3",
-    "puppeteer": "^23.11.1",
-    "puppeteer-core": "^10.4.0",
+    "puppeteer-core": "^6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
@@ -31,6 +29,7 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "puppeteer": "^23.11.1"
   }
 }

@@ -1,19 +1,28 @@
-import puppeteer from "puppeteer";
-import chromium from "chrome-aws-lambda";
-
 export default async (req, res) => {
   const {
     query: { page },
   } = req;
 
+  let chrome = {};
+  let puppeteer;
+  let options = {};
+  if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    chrome = require("chrome-aws-lambda");
+    puppeteer = require("puppeteer-core");
+    options = {
+      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chrome.defaultViewport,
+      executablePath: await chrome.executablePath,
+      headless: true,
+      ignoreHTTPSErrors: true,
+    };
+  } else {
+    puppeteer = require("puppeteer");
+  }
+
   try {
     // Launch a headless browser instance
-    const browser = await puppeteer.launch({
-      executablePath: await chromium.executablePath,
-      args: chromium.args,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
-    });
+    const browser = await puppeteer.launch(options);
 
     // Create a new page
     const newPage = await browser.newPage();
