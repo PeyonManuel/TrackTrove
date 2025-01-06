@@ -8,7 +8,12 @@ export default async (req, res) => {
 
   try {
     // Launch a headless browser instance
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: await chromium.executablePath,
+      args: chromium.args,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+    });
 
     // Create a new page
     const newPage = await browser.newPage();
