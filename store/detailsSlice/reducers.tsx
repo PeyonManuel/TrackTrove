@@ -4,11 +4,24 @@ import {
   isPending,
   isRejected,
 } from "@reduxjs/toolkit";
-import { movieDetails } from "./fetchers";
+import {
+  bookDetails,
+  comicDetails,
+  gameDetails,
+  mangaDetails,
+  movieDetails,
+  tvDetails,
+} from "./fetchers";
 
-const initialState = {
+export type detailsState = {
+  details: any;
+  detailsLoading: boolean;
+  error: string | null;
+};
+
+const initialState: detailsState = {
   details: {},
-  detailsLoading: false,
+  detailsLoading: true,
   error: null,
 };
 
@@ -21,14 +34,40 @@ const detailsSlice = createSlice({
       .addCase(movieDetails.fulfilled, (state, action) => {
         state.details = action.payload.details;
       })
+
+      // TV Details
+      .addCase(tvDetails.fulfilled, (state, action) => {
+        state.details = action.payload.details;
+      })
+
+      // Book Details
+      .addCase(bookDetails.fulfilled, (state, action) => {
+        state.details = action.payload.details;
+      })
+
+      // Game Details
+      .addCase(gameDetails.fulfilled, (state, action) => {
+        state.details = action.payload.details;
+      })
+
+      // Manga Details
+      .addCase(mangaDetails.fulfilled, (state, action) => {
+        state.details = action.payload.details;
+      })
+
+      // Comic Details
+      .addCase(comicDetails.fulfilled, (state, action) => {
+        state.details = action.payload.details;
+      })
       .addMatcher(isFulfilled, (state) => {
         state.detailsLoading = false;
       })
       .addMatcher(isRejected, (state, action) => {
         state.detailsLoading = false;
-        state.error = action.error.message;
+        state.error = action.error.message || "Something went wrong";
       })
       .addMatcher(isPending, (state) => {
+        state.details = {};
         state.detailsLoading = true;
         state.error = null;
       });

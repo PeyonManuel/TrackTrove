@@ -15,8 +15,8 @@ export default async (req, res) => {
     // Navigate to the URL
     const url = `https://www.backloggd.com/games/lib/popular?page=${page}`;
     await newPage.goto(url);
-
-    const { titles, hasNextPage } = await newPage.evaluate((page) => {
+    const { titles, hasNextPage } = await newPage.evaluate(() => {
+      const baseURL = "https://www.backloggd.com/games/";
       const titles = [];
       const elements = document.querySelectorAll(".col-2");
       const hasNextPage = elements.length > 0;
@@ -26,7 +26,10 @@ export default async (req, res) => {
             .querySelector(".game-text-centered")
             .textContent.trim(),
           imageUrl: element.querySelector(".card-img").src,
-          link: element.querySelector("a").href,
+          id: element
+            .querySelector("a")
+            .href.substring(baseURL.length)
+            .replace(/\//g, ""),
         });
       });
 

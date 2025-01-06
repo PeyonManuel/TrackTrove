@@ -13,18 +13,22 @@ export default async (req, res) => {
     const newPage = await browser.newPage();
 
     // Navigate to the URL
-    const url = `https://www.backloggd.com/SearchPage/games/${searchTerm}?&page=${page}`;
+    const url = `https://metron.cloud/series/search?page=${page}&q=${searchTerm}`;
     await newPage.goto(url);
 
-    const { titles, hasNextPage } = await newPage.evaluate(() => {
+    const { titles, hasNextPage } = await newPage.evaluate((page) => {
+      const baseURL = "https://metron.cloud/series/";
       const titles = [];
-      const elements = document.querySelectorAll(".result");
+      const elements = document.querySelectorAll(".card");
       const hasNextPage = elements.length > 0;
       elements.forEach((element) => {
         titles.push({
-          title: element.querySelector("h3").textContent.trim(),
-          imageUrl: element.querySelector(".card-img").src,
-          link: element.querySelector("a").href,
+          title: element.querySelector(".card-header-title").textContent.trim(),
+          imageUrl: element.querySelector("img").src,
+          id: element
+            .querySelectorAll(".card-footer-item")[1]
+            .href.substring(baseURL.length)
+            .replace(/\//g, ""),
         });
       });
 

@@ -10,9 +10,9 @@ export const searchComics = createAsyncThunk(
   async ({ searchTerm, page }: SearchComicsProps) => {
     try {
       const response = await axios.get(
-        `/api/comicsearch?searchTerm=${searchTerm}&page=${page}`
+        `/api/search/scraping/comicsearch?searchTerm=${searchTerm}&page=${page}`
       );
-      return response.data;
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }
@@ -25,9 +25,9 @@ export const searchBooks = createAsyncThunk(
   async ({ searchTerm, page }: SearchComicsProps) => {
     try {
       const response = await axios.get(
-        `/api/booksearch?searchTerm=${searchTerm}&page=${page}`
+        `/api/search/scraping/booksearch?searchTerm=${searchTerm}&page=${page}`
       );
-      return response.data;
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }
@@ -39,9 +39,9 @@ export const searchMovies = createAsyncThunk(
   async ({ searchTerm, page }: SearchComicsProps) => {
     try {
       const response = await axios.get(
-        `/api/moviesearch?s=${searchTerm}&page=${page}`
+        `/api/search/externalAPI/moviesearch?s=${searchTerm}&page=${page}`
       );
-      return response.data;
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }
@@ -53,9 +53,9 @@ export const searchTv = createAsyncThunk(
   async ({ searchTerm, page }: SearchComicsProps) => {
     try {
       const response = await axios.get(
-        `/api/tvsearch?s=${searchTerm}&page=${page}`
+        `/api/search/externalAPI/tvsearch?s=${searchTerm}&page=${page}`
       );
-      return response.data;
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }
@@ -66,15 +66,28 @@ interface SearchComicsProps {
   searchTerm: string;
   page: number;
 }
+
+let currentGameController: AbortController | null = null; // Keep track of the current controller
+// If there's an ongoing request, abort it
+
 // Define the asynchronous thunk action for searching comics
 export const searchGames = createAsyncThunk(
   "games/searchGames",
   async ({ searchTerm, page }: SearchComicsProps) => {
+    if (currentGameController !== null) {
+      // @ts-ignore
+      currentGameController.abort();
+    }
+
+    // Create a new AbortController for the new request
+    currentGameController = new AbortController();
+    const signal = currentGameController.signal;
     try {
       const response = await axios.get(
-        `/api/gamesearch?searchTerm=${searchTerm}&page=${page}`
+        `/api/search/scraping/gamesearch?searchTerm=${searchTerm}&page=${page}`,
+        { signal: signal }
       );
-      return response.data;
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }
@@ -82,12 +95,25 @@ export const searchGames = createAsyncThunk(
 );
 
 // Define the asynchronous thunk action for searching comics
-export const topGames = createAsyncThunk(
-  "games/searchGames",
+export const topGames: any = createAsyncThunk(
+  "games/topgames",
   async ({ page }: SearchComicsProps) => {
+    if (currentGameController !== null) {
+      // @ts-ignore
+      currentGameController.abort();
+    }
+
+    // Create a new AbortController for the new request
+    currentGameController = new AbortController();
+    const signal = currentGameController.signal;
     try {
-      const response = await axios.get(`/api/topgames?page=${page}`);
-      return response.data;
+      const response = await axios.get(
+        `/api/search/scraping/topgames?page=${page}`,
+        {
+          signal: signal,
+        }
+      );
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }
@@ -104,9 +130,9 @@ export const searchManga = createAsyncThunk(
   async ({ searchTerm, page }: SearchMangaProps) => {
     try {
       const response = await axios.get(
-        `/api/mangasearch?searchTerm=${searchTerm}&mediaType=MANGA&page=${page}`
+        `/api/search/externalAPI/mangasearch?searchTerm=${searchTerm}&mediaType=MANGA&page=${page}`
       );
-      return response.data;
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }
@@ -117,12 +143,14 @@ interface TopMangaProps {
   page: number;
 }
 
-export const topManga = createAsyncThunk(
+export const topManga: any = createAsyncThunk(
   "animeManga/topmanga",
   async ({ page }: TopMangaProps) => {
     try {
-      const response = await axios.get(`/api/topmanga?page=${page}`);
-      return response.data;
+      const response = await axios.get(
+        `/api/search/externalAPI/topmanga?page=${page}`
+      );
+      return { data: response.data, page: page };
     } catch (error) {
       throw error;
     }

@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       results.push({
         title: series.Title,
         imageUrl: series.Poster === "N/A" ? "" : series.Poster,
-        link: series.imdbID,
+        id: series.imdbID,
       });
     });
     const hasNextPage = results.length > 0;

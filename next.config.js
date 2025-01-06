@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 
 module.exports = {
-  experimental: { appDir: false },
   images: {
     remotePatterns: [
       {
@@ -32,6 +31,11 @@ module.exports = {
       {
         protocol: "https",
         hostname: "m.media-amazon.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "www.backloggd.com",
         port: "",
       },
     ],

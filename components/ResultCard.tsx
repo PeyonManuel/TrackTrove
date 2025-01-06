@@ -9,7 +9,6 @@ interface ResultCardProps {
   lastElement?: any;
   type: string;
 }
-
 const ResultCard = ({
   title,
   imageUrl,
@@ -32,9 +31,9 @@ const ResultCard = ({
           <Image
             className="object-cover w-full h-full transition hover:scale-105"
             fill
+            sizes="100%, 100%"
             alt={`${title} image`}
             src={imageUrl}
-            priority
           />
         </div>
       </figure>

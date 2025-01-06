@@ -37,23 +37,22 @@ export default async (req, res) => {
             .querySelector("a")
             .innerText.trim();
           imageUrl = element.querySelector("img").src;
-          link = element
-            .querySelector(".book-title-author-and-series")
-            .querySelector("a").href;
+          id = element
+            .querySelector(".book-title-author-and-series h1 a")
+            ?.href.split("/")[4];
           titles.push({
             title,
             imageUrl,
-            link,
+            id,
           });
         }
       });
-
       return { titles, hasNextPage };
     });
 
     // Close the browser
     await browser.close();
-
+    console.log(titles);
     // Send the scraped data as a JSON response
     res.status(200).json({ results: titles, hasNextPage });
   } catch (error) {

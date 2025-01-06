@@ -1,31 +1,26 @@
 export default async (req, res) => {
   const {
-    query: { searchTerm, page },
+    query: { page },
   } = req;
 
-  var query = `
-  query ($id: Int, $page: Int, $perPage: Int, $search: String) {
-    Page (page: $page, perPage: $perPage) {
-      pageInfo {
-        total
-        currentPage
-        lastPage
-        hasNextPage
-        perPage
-      }
-      media (id: $id, search: $search, type: MANGA) {
-        id
-        title {
-          english
-          romaji
+  var query = `{
+        Page (page: ${page}, perPage: 36) {
+            pageInfo {
+                hasNextPage
+            }
+        media (type: MANGA, format: MANGA, sort: TRENDING_DESC) {
+            id
+          title {
+            english
+            romaji
+          }
+          averageScore
+          coverImage {
+              extraLarge
+          }
         }
-        coverImage {
-          extraLarge
-        }
-      }
     }
-  }
-  `;
+      }`;
   // Define the config we'll need for our Api request
   var url = "https://graphql.anilist.co",
     options = {
@@ -36,11 +31,6 @@ export default async (req, res) => {
       },
       body: JSON.stringify({
         query: query,
-        variables: {
-          search: searchTerm,
-          page: page,
-          perPage: 36,
-        },
       }),
     };
 
@@ -56,10 +46,9 @@ export default async (req, res) => {
           title: data[i].title.english || data[i].title.romaji,
           imageUrl:
             data[i].coverImage.extraLarge || data[i].coverImage.large || "",
-          link: "",
+          id: data[i].id,
         });
       }
-
       res.status(200).json({ results, hasNextPage });
     })
     .catch((error) => {
