@@ -103,11 +103,6 @@ const SearchPage = () => {
     }
   }, [selectedOption, dispatch, page]);
 
-  const userId = window
-    .querySelector("[data-clerk-user-id]")
-    ?.getAttribute("data-clerk-user-id");
-  console.log(userId); // Logs the user ID if available
-
   return (
     <div className="flex gap-4 p-8 justify-center">
       <div className="max-w-screen-xl self-center flex flex-col gap-4 mt-4">
