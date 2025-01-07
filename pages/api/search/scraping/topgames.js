@@ -3,34 +3,33 @@ export default async (req, res) => {
     query: { page },
   } = req;
 
-  let chrome = {};
-  let puppeteer;
-  let options = {};
+  let browser;
+  let browserOptions = {};
+
+  // Set up for running in serverless environments like AWS Lambda or Vercel
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-    chrome = require("chrome-aws-lambda");
-    puppeteer = require("puppeteer-core");
-    options = {
-      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
-      defaultViewport: chrome.defaultViewport,
-      executablePath: await chrome.executablePath,
+    const playwright = require("playwright-aws-lambda");
+    browser = await playwright.chromium.launch({
+      args: [...playwright.args, "--hide-scrollbars", "--disable-web-security"],
       headless: true,
-      ignoreHTTPSErrors: true,
-    };
+    });
   } else {
-    puppeteer = require("puppeteer");
+    const playwright = require("playwright");
+    browser = await playwright.chromium.launch({
+      headless: true,
+    });
   }
 
   try {
-    // Launch a headless browser instance
-    const browser = await puppeteer.launch(options);
-
-    // Create a new page
-    const newPage = await browser.newPage();
+    // Create a new browser page
+    const page = await browser.newPage();
 
     // Navigate to the URL
     const url = `https://www.backloggd.com/games/lib/popular?page=${page}`;
-    await newPage.goto(url);
-    const { titles, hasNextPage } = await newPage.evaluate(() => {
+    await page.goto(url);
+
+    // Scrape data from the page
+    const { titles, hasNextPage } = await page.evaluate(() => {
       const baseURL = "https://www.backloggd.com/games/";
       const titles = [];
       const elements = document.querySelectorAll(".col-2");
