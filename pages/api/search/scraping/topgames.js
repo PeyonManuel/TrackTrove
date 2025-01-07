@@ -18,7 +18,6 @@ export default async (req, res) => {
     const $ = cheerio.load(data);
 
     const titles = [];
-    const baseURL = "https://www.backloggd.com/games/";
 
     // Extract game data
     $(".col-2").each((i, element) => {
@@ -27,9 +26,8 @@ export default async (req, res) => {
       const id = $(element)
         .find("a")
         .attr("href")
-        .substring(baseURL.length)
-        .replace(/\//g, "");
-
+        .split("/games/")[1]
+        .replace(/\/$/, "");
       titles.push({ title, imageUrl, id });
     });
 

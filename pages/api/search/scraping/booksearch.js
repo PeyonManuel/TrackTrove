@@ -1,5 +1,5 @@
-import puppeteer from "puppeteer";
-import chromium from "chrome-aws-lambda";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 export default async (req, res) => {
   const {
@@ -7,52 +7,53 @@ export default async (req, res) => {
   } = req;
 
   try {
-    const browser = await puppeteer.launch();
-
-    // Create a new page
-    const newPage = await browser.newPage();
-
-    // Navigate to the URL
+    // Define the URL for scraping
     const url = `https://app.thestorygraph.com/browse?search_term=${searchTerm}&page=${page}`;
-    await newPage.goto(url);
 
-    const { titles, hasNextPage } = await newPage.evaluate((page) => {
-      const titles = [];
-      var elements = document.querySelectorAll(".book-pane");
-      const hasNextPage = elements.length > 0;
-      elements.forEach((element) => {
-        tags = element.querySelectorAll(".book-pane-tag-section");
-        isMangaOrManga = false;
-        tags.forEach((tag) => {
-          tag = tag.innerText.toLowerCase().trim();
-          if (
-            tag.includes("manga") ||
-            tag.includes("comics") ||
-            tag.includes("graphic novel")
-          )
-            isMangaOrManga = true;
-        });
-        if (!isMangaOrManga) {
-          title = element
-            .querySelector(".book-title-author-and-series")
-            .querySelector("a")
-            .innerText.trim();
-          imageUrl = element.querySelector("img").src;
-          id = element
-            .querySelector(".book-title-author-and-series h1 a")
-            ?.href.split("/")[4];
-          titles.push({
-            title,
-            imageUrl,
-            id,
-          });
+    // Fetch the HTML page content using Axios
+    const { data } = await axios.get(url);
+
+    // Load the HTML into Cheerio for scraping
+    const $ = cheerio.load(data);
+
+    // Extract titles and next page status
+    const titles = [];
+    const elements = $(".book-pane");
+    const hasNextPage = elements.length > 0;
+
+    elements.each((index, element) => {
+      let isMangaOrComic = false;
+      const tags = $(element).find(".book-pane-tag-section");
+
+      tags.each((_, tag) => {
+        const tagText = $(tag).text().toLowerCase().trim();
+        if (
+          tagText.includes("manga") ||
+          tagText.includes("comics") ||
+          tagText.includes("graphic novel")
+        ) {
+          isMangaOrComic = true;
         }
       });
-      return { titles, hasNextPage };
-    });
 
-    // Close the browser
-    await browser.close();
+      if (!isMangaOrComic) {
+        const title = $(element)
+          .find(".book-title-author-and-series a")
+          .text()
+          .trim();
+        const imageUrl = $(element).find("img").attr("src");
+        const id = $(element)
+          .find(".book-title-author-and-series h1 a")
+          .attr("href")
+          ?.split("/")[2];
+
+        titles.push({
+          title,
+          imageUrl,
+          id,
+        });
+      }
+    });
     // Send the scraped data as a JSON response
     res.status(200).json({ results: titles, hasNextPage });
   } catch (error) {

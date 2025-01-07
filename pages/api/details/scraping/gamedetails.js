@@ -1,5 +1,5 @@
-import puppeteer from "puppeteer";
-import chromium from "chrome-aws-lambda";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 export default async (req, res) => {
   const {
@@ -7,28 +7,26 @@ export default async (req, res) => {
   } = req;
 
   try {
-    // Launch a headless browser instance
-    const browser = await puppeteer.launch();
-
-    // Create a new page
-    const newPage = await browser.newPage();
-
-    // Navigate to the URL
+    // Build the URL for the specific game
     const url = `https://www.backloggd.com/games/${id}`;
-    await newPage.goto(url);
 
-    const details = await newPage.evaluate(() => {
-      const title = document.querySelector("#title h1")?.textContent.trim();
-      const imageUrl = document.querySelector(".game-cover img")?.src;
-      const synopsis = document
-        .querySelector("#collapseSummary p")
-        ?.textContent.trim();
+    // Fetch the HTML content from the URL
+    const { data } = await axios.get(url);
 
-      return { title, imageUrl, synopsis };
-    });
+    // Load the HTML into Cheerio
+    const $ = cheerio.load(data);
 
-    // Close the browser
-    await browser.close();
+    // Scrape the title, image URL, and synopsis
+    const title = $("#title h1").text().trim();
+    const imageUrl = $(".game-cover img").attr("src");
+    const synopsis = $("#collapseSummary p").text().trim();
+
+    // Package the scraped details
+    const details = {
+      title,
+      imageUrl,
+      synopsis,
+    };
 
     // Send the scraped data as a JSON response
     res.status(200).json({ details });

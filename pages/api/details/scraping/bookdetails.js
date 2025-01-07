@@ -1,5 +1,5 @@
-import puppeteer from "puppeteer";
-import chromium from "chrome-aws-lambda";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 export default async (req, res) => {
   const {
@@ -7,34 +7,28 @@ export default async (req, res) => {
   } = req;
 
   try {
-    const browser = await puppeteer.launch();
-
-    // Create a new page
-    const newPage = await browser.newPage();
-
-    // Navigate to the URL
+    // Build the URL for the specific book
     const url = `https://app.thestorygraph.com/books/${id}`;
-    await newPage.goto(url);
 
-    const { details } = await newPage.evaluate((page) => {
-      const title = document
-        .querySelector(".book-title-author-and-series h3")
-        ?.firstChild.textContent.trim();
-      document.querySelector(".read-more-btn")?.click();
-      const synopsis = document
-        .querySelector(".blurb-pane .trix-content")
-        ?.textContent.trim();
-      const imageUrl = document.querySelector(".book-cover img")?.src;
-      const details = {
-        title,
-        synopsis,
-        imageUrl,
-      };
-      return { details };
-    });
+    // Fetch the HTML of the page
+    const { data } = await axios.get(url);
+    // Load the HTML into Cheerio
+    const $ = cheerio.load(data);
 
-    // Close the browser
-    await browser.close();
+    // Scrape the book details
+    const title = $(".book-title-author-and-series h3").first().text().trim();
+    const synopsis = $(".trix-content")
+      .first() // Ensures we're targeting the first relevant div with the class "trix-content"
+      .text()
+      .trim();
+
+    const imageUrl = $(".book-cover img").attr("src");
+
+    const details = {
+      title,
+      synopsis,
+      imageUrl,
+    };
 
     // Send the scraped data as a JSON response
     res.status(200).json({ details });

@@ -1,5 +1,5 @@
-import puppeteer from "puppeteer";
-import chromium from "chrome-aws-lambda";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 export default async (req, res) => {
   const {
@@ -7,42 +7,40 @@ export default async (req, res) => {
   } = req;
 
   try {
-    // Launch a headless browser instance
-    const browser = await puppeteer.launch();
-
-    // Create a new page
-    const newPage = await browser.newPage();
-
-    // Navigate to the URL
+    // Build the URL for the specific series
     const url = `https://metron.cloud/series/${id}/`;
-    await newPage.goto(url);
 
-    const { details } = await newPage.evaluate((page) => {
-      const title = document.getElementsByClassName("title")[0].textContent;
-      const synopsis = Array.from(document.getElementsByClassName("box"))
-        .find((element) => {
-          const title = element.querySelector("h1");
-          return title && title.textContent.includes("Summary");
-        })
-        ?.querySelector("p")?.textContent;
-      const imageUrl = Array.from(document.getElementsByClassName("box"))
-        .find((element) => {
-          const figure = element.querySelector("figure.image.is-2by3");
-          return figure && figure.querySelector("img");
-        })
-        ?.querySelector("img")?.src;
-      const details = {
-        title,
-        synopsis,
-        imageUrl,
-      };
+    // Fetch the HTML content from the URL
+    const { data } = await axios.get(url);
+    console.log(data);
+    // Load the HTML into Cheerio
+    const $ = cheerio.load(data);
 
-      return { details };
-    });
+    // Scrape the title
+    const title = $(".title").first().text().trim();
 
-    // Close the browser
-    await browser.close();
+    // Scrape the synopsis from the "Summary" section
+    const synopsis = $(".box")
+      .find("h1")
+      .filter((i, el) => $(el).text().includes("Summary"))
+      .closest(".box")
+      .find("p")
+      .text()
+      .trim();
 
+    // Scrape the image URL
+    const imageUrl = $(".box")
+      .find("figure.image.is-2by3")
+      .find("img")
+      .attr("src");
+
+    // Package the scraped details
+    const details = {
+      title,
+      synopsis,
+      imageUrl,
+    };
+    console.log(details);
     // Send the scraped data as a JSON response
     res.status(200).json({ details });
   } catch (error) {

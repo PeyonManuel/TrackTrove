@@ -1,5 +1,5 @@
-import puppeteer from "puppeteer";
-import chromium from "chrome-aws-lambda";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 export default async (req, res) => {
   const {
@@ -7,38 +7,33 @@ export default async (req, res) => {
   } = req;
 
   try {
-    // Launch a headless browser instance
-    const browser = await puppeteer.launch();
-
-    // Create a new page
-    const newPage = await browser.newPage();
-
-    // Navigate to the URL
+    // Define the URL for scraping
     const url = `https://metron.cloud/series/search?page=${page}&q=${searchTerm}`;
-    await newPage.goto(url);
 
-    const { titles, hasNextPage } = await newPage.evaluate((page) => {
-      const baseURL = "https://metron.cloud/series/";
-      const titles = [];
-      const elements = document.querySelectorAll(".card");
-      const hasNextPage = elements.length > 0;
-      elements.forEach((element) => {
-        titles.push({
-          title: element.querySelector(".card-header-title").textContent.trim(),
-          imageUrl: element.querySelector("img").src,
-          id: element
-            .querySelectorAll(".card-footer-item")[1]
-            .href.substring(baseURL.length)
-            .replace(/\//g, ""),
-        });
+    // Fetch the HTML page content using Axios
+    const { data } = await axios.get(url);
+
+    // Load the HTML into Cheerio for scraping
+    const $ = cheerio.load(data);
+
+    // Extract titles and next page status
+    const titles = [];
+    const elements = $(".card");
+    const hasNextPage = elements.length > 0;
+
+    elements.each((index, element) => {
+      titles.push({
+        title: $(element).find(".card-header-title").text().trim(),
+        imageUrl: $(element).find("img").attr("src"),
+        id: $(element)
+          .find(".card-footer-item")
+          .eq(1)
+          .attr("href")
+          .split("/series")[1]
+          .replace(/^\/|\/$/g, ""),
       });
-
-      return { titles, hasNextPage };
     });
-
-    // Close the browser
-    await browser.close();
-
+    console.log(titles);
     // Send the scraped data as a JSON response
     res.status(200).json({ results: titles, hasNextPage });
   } catch (error) {
